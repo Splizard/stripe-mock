@@ -167,7 +167,10 @@ func NewStubServer(fixtures *spec.Fixtures, spec *spec.Spec, strictVersionCheck 
 // HandleRequest handes an HTTP request directed at the API stub.
 func (s *StubServer) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-	fmt.Printf("Request: %v %v\n", r.Method, r.URL.Path)
+
+	if Verbose {
+		fmt.Printf("Request: %v %v\n", r.Method, r.URL.Path)
+	}
 
 	//
 	// Validate headers
@@ -413,8 +416,10 @@ func (s *StubServer) initializeRouter() error {
 		})
 	}
 
-	fmt.Printf("Routing to %v path(s) and %v endpoint(s) with %v validator(s)\n",
-		numPaths, numEndpoints, numValidators)
+	if Verbose {
+		fmt.Printf("Routing to %v path(s) and %v endpoint(s) with %v validator(s)\n",
+			numPaths, numEndpoints, numValidators)
+	}
 	return nil
 }
 
@@ -754,7 +759,10 @@ func validateAndCoerceRequest(
 		return nil, createStripeError(typeInvalidRequestError, message)
 	}
 
-	fmt.Printf("Request data = %+v\n", requestData)
+	if Verbose {
+		fmt.Printf("Request data = %+v\n", requestData)
+	}
+
 	err = route.requestValidator.Validate(requestData)
 	if err != nil {
 		message := fmt.Sprintf("Request validation error: %v", err)
@@ -845,5 +853,8 @@ func writeResponse(w http.ResponseWriter, r *http.Request, start time.Time, stat
 	if err != nil {
 		fmt.Printf("Error writing to client: %v\n", err)
 	}
-	fmt.Printf("Response: elapsed=%v status=%v\n", time.Now().Sub(start), status)
+
+	if Verbose {
+		fmt.Printf("Response: elapsed=%v status=%v\n", time.Now().Sub(start), status)
+	}
 }
